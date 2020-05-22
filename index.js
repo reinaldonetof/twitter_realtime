@@ -17,26 +17,42 @@ const T = new Twit({
   timeout_ms: 60 * 1000,
 });
 
+const streams = {};
+
+const createStream = (term) => {
+  const stream = T.stream("statuses/filter", { track: term });
+  stream.on("tweet", (tweet) => {
+    io.to(term).emit("tweet", {
+      username: tweet.user.name,
+      text: tweet.text,
+      term,
+    });
+  });
+  streams[term] = stream;
+};
+
+const checkStreams = () => {
+  const terms = Object.keys(streams);
+  terms
+    .filter((t) => !(t in io.sockets.adapter.rooms))
+    .map((t) => {
+      streams[t].stop();
+      delete streams[t];
+    });
+};
+
 io.on("connection", (socket) => {
-  console.log(socket.id);
-  // socket.join("minhaSala");
   socket.on("startStream", (term) => {
-    console.log(term);
+    if (!(term in streams)) {
+      createStream(term);
+    }
+    socket.join(term);
   });
-  console.log(io.sockets.adapter.rooms);
   socket.on("disconnect", (reason) => {
-    console.log(reason);
+    checkStreams();
   });
 });
-/*
-const stream = T.stream("statuses/filter", { track: "#SemSpoiler2anos" });
-stream.on("tweet", (tweet) => {
-  io.emit("tweet", {
-    username: tweet.user.name,
-    text: tweet.text,
-  });
-});
-*/
+
 app.get("/", (req, res) => {
   res.render("home");
 });
