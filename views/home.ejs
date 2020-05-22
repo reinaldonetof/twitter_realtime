@@ -18,7 +18,9 @@
   </head>
   <body>
     <h1>Tweets sobre #apple</h1>
-    <div></div>
+    <div>
+      <div id="tweets"></div>
+    </div>
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script
@@ -39,7 +41,10 @@
     <script src="/socket.io/socket.io.js"></script>
     <script>
       $(function () {
-        alert(1);
+        const socket = io();
+        socket.on("tweet", (tweet) => {
+          $("#tweets").append(JSON.stringify(tweet));
+        });
       });
     </script>
   </body>

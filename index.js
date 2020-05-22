@@ -20,7 +20,10 @@ const T = new Twit({
 const stream = T.stream("statuses/filter", { track: "#SemSpoiler2anos" });
 stream.on("error", (req) => console.log(req));
 stream.on("tweet", (tweet) => {
-  console.log(tweet.user.name, tweet.text);
+  io.emit("tweet", {
+    username: tweet.user.name,
+    text: tweet.text,
+  });
 });
 
 app.get("/", (req, res) => {
