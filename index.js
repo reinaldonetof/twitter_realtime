@@ -8,8 +8,6 @@ const port = process.env.PORT || 3000;
 
 app.set("view engine", "ejs");
 
-console.log(process.env.CONSUMER_KEY);
-
 const Twit = require("twit");
 const T = new Twit({
   consumer_key: process.env.CONSUMER_KEY,
@@ -17,6 +15,12 @@ const T = new Twit({
   access_token: process.env.ACCESS_TOKEN,
   access_token_secret: process.env.ACCESS_TOKEN_SECRET,
   timeout_ms: 60 * 1000,
+});
+
+const stream = T.stream("statuses/filter", { track: "#SemSpoiler2anos" });
+stream.on("error", (req) => console.log(req));
+stream.on("tweet", (tweet) => {
+  console.log(tweet.user.name, tweet.text);
 });
 
 app.get("/", (req, res) => {
