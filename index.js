@@ -17,15 +17,26 @@ const T = new Twit({
   timeout_ms: 60 * 1000,
 });
 
+io.on("connection", (socket) => {
+  console.log(socket.id);
+  // socket.join("minhaSala");
+  socket.on("startStream", (term) => {
+    console.log(term);
+  });
+  console.log(io.sockets.adapter.rooms);
+  socket.on("disconnect", (reason) => {
+    console.log(reason);
+  });
+});
+/*
 const stream = T.stream("statuses/filter", { track: "#SemSpoiler2anos" });
-stream.on("error", (req) => console.log(req));
 stream.on("tweet", (tweet) => {
   io.emit("tweet", {
     username: tweet.user.name,
     text: tweet.text,
   });
 });
-
+*/
 app.get("/", (req, res) => {
   res.render("home");
 });

@@ -17,7 +17,15 @@
     />
   </head>
   <body>
-    <h1>Tweets sobre #apple</h1>
+    <h1>
+      Tweets sobre:
+      <input class="form-control" type="text" id="topic" placeholder="topic" />
+    </h1>
+
+    <div class="card">
+      <p>Term</p>
+    </div>
+
     <div>
       <div id="tweets"></div>
     </div>
@@ -43,7 +51,16 @@
       $(function () {
         const socket = io();
         socket.on("tweet", (tweet) => {
-          $("#tweets").append(JSON.stringify(tweet));
+          $("#tweets").append(
+            `<div class="card">
+              <div class="card-body"><b>${tweet.username}</b>: <br>${tweet.text}</div>
+            </div>`
+          );
+        });
+        $("#topic").keyup((key) => {
+          if (key.keyCode === 13) {
+            socket.emit("startStream", $("#topic").val());
+          }
         });
       });
     </script>
